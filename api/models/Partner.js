@@ -1,24 +1,23 @@
 module.exports = {
   attributes: {
     title: {
-      type: string,
-      required: true,
-      defaultsTo: 'unknown partner'
+      type: 'string',
+      required: true
     },
 
     username: {
-      type: string,
+      type: 'string',
       required: true,
       unique: true
     },
 
     password: {
-      type: string,
+      type: 'string',
       required: true
     },
 
     sockets: {
-      type: array,
+      type: 'json',
       defaultsTo: []
     }
   }

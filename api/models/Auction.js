@@ -1,9 +1,8 @@
 module.exports = {
   attributes: {
     title: {
-      type: string,
-      required: true,
-      defaultsTo: 'unknown auction'
+      type: 'string',
+      required: true
     },
 
     room: {
@@ -11,39 +10,36 @@ module.exports = {
     },
 
     minimumAllowedBid: {
-      type: integer,
-      required: true,
-      defaultsTo: 0
+      type: 'number',
+      required: true
     },
 
     startAt: {
-      type: datetime,
+      type: 'number',
       required: true
     },
 
     endAt: {
-      type: datetime,
+      type: 'number',
       required: true
     },
 
     lastBidAt: {
-      type: datetime
+      type: 'number'
     },
 
     lastBidAmount: {
-      type: integer
+      type: 'number'
     },
 
     isRunning: {
-      type: boolean,
-      required: true,
+      type: 'boolean',
       defaultsTo: false
     },
 
     isActive: {
-      type: boolean,
-      required: true,
-      defaultsTo: 'true'
+      type: 'boolean',
+      defaultsTo: true
     },
 
     bids: {

@@ -1,21 +1,18 @@
 module.exports = {
   attributes: {
     title: {
-      type: string,
-      required: true,
-      defaultsTo: 'unknown room'
+      type: 'string',
+      required: true
     },
 
     mainImageUri: {
-      type: string,
-      required: true,
+      type: 'string',
       defaultsTo: 'http://mp3aux.com/assets/images/empty.png'
     },
 
     isActive: {
-      type: boolean,
-      required: true,
-      defaultsTo: 'true'
+      type: 'boolean',
+      defaultsTo: true
     },
 
     auctions: {

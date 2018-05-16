@@ -9,15 +9,13 @@ module.exports = {
     },
 
     bidAmount: {
-      type: integer,
-      required: true,
-      defaultsTo: 0
+      type: 'number',
+      required: true
     },
 
     status: {
-      type: string,
-      required: true,
-      enum: ['Pending', 'Rejected', 'Approved'],
+      type: 'string',
+      isIn: ['Pending', 'Rejected', 'Approved'],
       defaultsTo: 'Pending'
     }
   }
