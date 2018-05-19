@@ -1,10 +1,13 @@
 module.exports = async function readArchived(req, res) {
   try {
     var auctions = await Auction.find({
-      isRunning: false,
-      isActive: true,
-      startAt: { '>': 0 },
-      endAt: { '>': 0 }
+      where: {
+        isRunning: false,
+        isActive: true,
+        startAt: { '>': 0 },
+        endAt: { '>': 0 }
+      },
+      sort: 'endAt DESC'
     });
     console.log(auctions);
   } catch (err) {
