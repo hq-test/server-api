@@ -16,9 +16,12 @@ module.exports = {
       required: true
     },
 
-    sockets: {
-      type: 'json',
-      defaultsTo: []
+    socket: {
+      type: 'string'
+    },
+
+    token: {
+      type: 'string'
     }
   }
 };

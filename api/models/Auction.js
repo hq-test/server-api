@@ -1,8 +1,7 @@
 module.exports = {
   attributes: {
     title: {
-      type: 'string',
-      required: true
+      type: 'string'
     },
 
     room: {
@@ -15,20 +14,10 @@ module.exports = {
     },
 
     startAt: {
-      type: 'number',
-      required: true
-    },
-
-    endAt: {
-      type: 'number',
-      required: true
-    },
-
-    lastBidAt: {
       type: 'number'
     },
 
-    lastBidAmount: {
+    endAt: {
       type: 'number'
     },
 
