@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 module.exports = async function update(req, res) {
   try {
     var allParams = req.allParams();
@@ -8,10 +10,12 @@ module.exports = async function update(req, res) {
 
     if (allParams.id) {
       var auction = await Auction.update(
-        { id: allParams.id },
+        { id: allParams.id, isRunning: false },
         {
-          startAt: new Date(),
-          endAt: new Date(),
+          startAt: new Date().getTime(),
+          endAt: moment()
+            .add('10', 'm')
+            .valueOf(),
           isRunning: true
         }
       ).meta({ fetch: true });
@@ -24,6 +28,7 @@ module.exports = async function update(req, res) {
       });
     }
   } catch (err) {
+    console.log('catch', err);
     return res.json({ result: false, error: err });
   }
 };
