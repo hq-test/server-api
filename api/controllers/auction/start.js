@@ -19,8 +19,9 @@ module.exports = async function update(req, res) {
           isRunning: true
         }
       ).meta({ fetch: true });
-      console.log('result of start is', auction);
-      return res.json({ result: true, data: auction });
+
+      console.log('result of start is', auction.length && auction[0]);
+      return res.json({ result: true, data: auction.length && auction[0] });
     } else {
       return res.json({
         result: false,

@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 module.exports = async function create(req, res) {
   try {
     var allParams = req.allParams();
@@ -7,13 +9,24 @@ module.exports = async function create(req, res) {
     }
 
     if (allParams.room && allParams.minimumAllowedBid) {
-      var auction = await Auction.create({
+      let query = {
         title: allParams.title,
         room: allParams.room,
         minimumAllowedBid: allParams.minimumAllowedBid,
         isActive: allParams.isActive
-      }).meta({ fetch: true });
-      console.log('result of creation is', auction);
+      };
+      if (allParams.isRunning) {
+        query = {
+          ...query,
+          isRunning: true,
+          startAt: new Date().getTime(),
+          endAt: moment()
+            .add('10', 'm')
+            .valueOf()
+        };
+      }
+      var auction = await Auction.create(query).meta({ fetch: true });
+
       return res.json({ result: true, data: auction });
     } else {
       return res.json({

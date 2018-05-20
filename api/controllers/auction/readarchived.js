@@ -7,7 +7,7 @@ module.exports = async function readArchived(req, res) {
         startAt: { '>': 0 },
         endAt: { '>': 0 }
       },
-      sort: 'endAt DESC'
+      sort: 'endAt ASC'
     });
     console.log(auctions);
   } catch (err) {

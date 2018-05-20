@@ -16,7 +16,7 @@ module.exports = async function update(req, res) {
           isActive: allParams.isActive
         }
       ).meta({ fetch: true });
-      console.log('result of update is', auction);
+
       return res.json({ result: true, data: auction });
     } else {
       return res.json({

@@ -37,30 +37,40 @@ module.exports = {
     }
   },
 
-  afterCreate: function(record, proceed) {
+  afterCreate: async function(record, proceed) {
     console.log('new auction record', record);
-    sails.sockets.broadcast('auction_model', {
-      action: 'create',
-      data: record
-    });
+    var auctionPopulated = await Auction.findOne({ id: record.id }).populate(
+      'room'
+    );
+    console.log('result of creation is', auctionPopulated);
+
+    sails.sockets.broadcast(
+      'auction_model',
+      'auction_model_create',
+      auctionPopulated
+    );
     return proceed();
   },
 
-  afterUpdate: function(record, proceed) {
+  afterUpdate: async function(record, proceed) {
     console.log('update auction record', record);
-    sails.sockets.broadcast('auction_model', {
-      action: 'update',
-      data: record
-    });
+
+    var auctionPopulated = await Auction.findOne({ id: record.id }).populate(
+      'room'
+    );
+    console.log('result of update is', auctionPopulated);
+
+    sails.sockets.broadcast(
+      'auction_model',
+      'auction_model_update',
+      auctionPopulated
+    );
     return proceed();
   },
 
   afterDestroy: function(record, proceed) {
     console.log('destroy auction record', record);
-    sails.sockets.broadcast('auction_model', {
-      action: 'delete',
-      data: record
-    });
+    sails.sockets.broadcast('auction_model', 'auction_model_destroy', record);
     return proceed();
   }
 };
