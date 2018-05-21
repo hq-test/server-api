@@ -14,7 +14,7 @@ module.exports = async function update(req, res) {
         {
           startAt: new Date().getTime(),
           endAt: moment()
-            .add('10', 'm')
+            .add('1', 'm')
             .valueOf(),
           isRunning: true
         }

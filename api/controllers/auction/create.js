@@ -21,7 +21,7 @@ module.exports = async function create(req, res) {
           isRunning: true,
           startAt: new Date().getTime(),
           endAt: moment()
-            .add('10', 'm')
+            .add('1', 'm')
             .valueOf()
         };
       }

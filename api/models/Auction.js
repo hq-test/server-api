@@ -1,3 +1,5 @@
+var closeAuctionHandlers = {};
+
 module.exports = {
   attributes: {
     title: {
@@ -44,6 +46,32 @@ module.exports = {
     );
     console.log('result of creation is', auctionPopulated);
 
+    if (record.isRunning && record.isActive) {
+      closeAuctionHandlers[record.id] = setTimeout(async () => {
+        console.log('close auction ', record.id);
+        await Auction.update(
+          {
+            id: record.id
+          },
+          {
+            isRunning: false
+          }
+        );
+
+        // notify loosers and winner
+        // TODO
+
+        var auctionPopulated = await Auction.findOne({
+          id: record.id
+        }).populate('room');
+        sails.sockets.broadcast(
+          'auction_model',
+          'auction_model_update',
+          auctionPopulated
+        );
+      }, 3000);
+    }
+
     sails.sockets.broadcast(
       'auction_model',
       'auction_model_create',
@@ -65,6 +93,7 @@ module.exports = {
       'auction_model_update',
       auctionPopulated
     );
+
     return proceed();
   },
 
