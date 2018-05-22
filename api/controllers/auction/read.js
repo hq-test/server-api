@@ -1,13 +1,11 @@
-module.exports = async function readLive(req, res) {
+module.exports = async function read(req, res) {
   try {
     var auctions = await Auction.find({
-      where: { isRunning: true, isActive: true },
-      sort: 'endAt ASC'
+      sort: 'endAt DESC'
     })
       .populate('room')
       .populate('bids', { limit: 1, sort: 'createdAt DESC' });
-
-    console.log(auctions);
+    console.log('all rooms reading', auctions);
   } catch (err) {
     return res.json({ result: false, error: err });
   }

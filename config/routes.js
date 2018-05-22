@@ -31,6 +31,7 @@ module.exports.routes = {
   'post /api/partner/login': 'partner/login',
   'post /api/partner/logout': 'partner/logout',
 
+  'get /api/auction/read/all': 'auction/read',
   'get /api/auction/read/live': 'auction/readLive',
   'get /api/auction/read/archived': 'auction/readArchived',
   'post /api/auction/subscribe': 'auction/subscribe',
@@ -38,7 +39,9 @@ module.exports.routes = {
   'post /api/auction/create': 'auction/create',
   'put /api/auction/update': 'auction/update',
   'put /api/auction/start': 'auction/start',
-  'delete /api/auction/destroy': 'auction/destroy'
+  'delete /api/auction/destroy': 'auction/destroy',
+
+  'post /api/bid/create': 'bid/create'
 
   /***************************************************************************
    *                                                                          *

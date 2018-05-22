@@ -55,7 +55,7 @@ module.exports = {
           {
             isRunning: false
           }
-        );
+        ).meta({ fetch: true });
 
         var auctionPopulated = await Auction.findOne({
           id: record.id
@@ -84,9 +84,12 @@ module.exports = {
   },
 
   afterUpdate: async function(record, proceed) {
-    var auctionPopulated = await Auction.findOne({ id: record.id }).populate(
-      'room'
-    );
+    var auctionPopulated = await Auction.findOne({ id: record.id })
+      .populate('room')
+      .populate('bids', {
+        limit: 2,
+        sort: 'createdAt DESC'
+      });
 
     sails.sockets.broadcast(
       'auction_model',
@@ -110,7 +113,7 @@ module.exports = {
           {
             isRunning: false
           }
-        );
+        ).meta({ fetch: true });
 
         var auctionPopulated = await Auction.findOne({
           id: record.id
@@ -148,7 +151,7 @@ module.exports = {
                 {
                   status: 'Approved'
                 }
-              );
+              ).meta({ fetch: true });
 
               // find winner socket for notify
               var partner = await Partner.findOne({
@@ -184,7 +187,7 @@ module.exports = {
                 {
                   status: 'Rejected'
                 }
-              );
+              ).meta({ fetch: true });
 
               // find loser socket for notify
               var partner = await Partner.findOne({
@@ -230,7 +233,7 @@ module.exports = {
                 {
                   status: 'Approved'
                 }
-              );
+              ).meta({ feetch: true });
 
               // find winner socket for notify
               var partner = await Partner.findOne({
@@ -266,7 +269,7 @@ module.exports = {
                 {
                   status: 'Rejected'
                 }
-              );
+              ).meta({ fetch: true });
 
               // find loser socket for notify
               var partner = await Partner.findOne({

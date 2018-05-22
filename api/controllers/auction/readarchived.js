@@ -25,7 +25,9 @@ module.exports = async function readArchived(req, res) {
           endAt: { '>': 0 }
         },
         sort: 'endAt ASC'
-      }).populate('room');
+      })
+        .populate('room')
+        .populate('bids', { limit: 1, sort: 'createdAt DESC' });
     }
 
     return res.json({ result: true, data: auctions });
