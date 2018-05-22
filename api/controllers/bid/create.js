@@ -35,11 +35,18 @@ module.exports = async function create(req, res) {
 
         if (allowCreateBid) {
           // create new bid
-          var bid = await Bid.create({
-            auction: allParams.auction,
-            partner: allParams.partner,
-            bidAmount: allParams.bidAmount
-          }).meta({ fetch: true });
+          var bid = await Bid.findOrCreate(
+            {
+              auction: allParams.auction,
+              partner: allParams.partner,
+              bidAmount: allParams.bidAmount
+            },
+            {
+              auction: allParams.auction,
+              partner: allParams.partner,
+              bidAmount: allParams.bidAmount
+            }
+          );
 
           console.log(
             '-------------  check update old bid',

@@ -78,16 +78,39 @@ module.exports = {
   afterUpdate: async function(record, proceed) {
     console.log('update bid record', record);
 
-    // notify auction that have their bids chnages
-    var auction = await Auction.findOne({
+    // notify auction that have their bids chanages
+    var auctionPopulated = await Auction.findOne({
       id: record.auction
     })
       .populate('room')
       .populate('bids', { limit: 1, sort: 'createdAt DESC' });
 
-    if (auction) {
-      sails.sockets.broadcast('auction_model', 'auction_model_update', auction);
+    if (auctionPopulated) {
+      sails.sockets.broadcast(
+        'auction_model',
+        'auction_model_update',
+        auctionPopulated
+      );
     }
+
+    // notify loser partner for this auction bid
+    // find loser socket for notify
+    var partner = await Partner.findOne({
+      id: record.partner
+    });
+    console.log('find loser socket for notify', partner);
+
+    // notify winner
+    console.log(
+      'notify loser',
+      'room ',
+      partner.socket,
+      'event',
+      'bid_model_loser',
+      auctionPopulated
+    );
+
+    sails.sockets.broadcast(partner.socket, 'bid_model_loser', record);
 
     return proceed();
   }

@@ -1,4 +1,4 @@
-var closeAuctionHandlers = {};
+const moment = require('moment');
 
 module.exports = {
   attributes: {
@@ -46,7 +46,7 @@ module.exports = {
     );
 
     if (record.isRunning && record.isActive) {
-      closeAuctionHandlers[record.id] = setTimeout(async () => {
+      sails.config.closeAuctionHandlers[record.id] = setTimeout(async () => {
         console.log('close auction in create process', record.id);
         await Auction.update(
           {
@@ -71,7 +71,7 @@ module.exports = {
           'auction_model_update',
           auctionPopulated
         );
-        // clearTimeout(closeAuctionHandlers[record.id]);
+        // clearTimeout(sails.config.closeAuctionHandlers[record.id]);
       }, 60000);
     }
 
@@ -99,12 +99,34 @@ module.exports = {
 
     if (record.isRunning && record.isActive) {
       // remove old selfClose auction
-      if (closeAuctionHandlers[record.id]) {
-        clearTimeout(closeAuctionHandlers[record.id]);
+      if (sails.config.closeAuctionHandlers[record.id]) {
+        console.log(
+          ' ******    clear timeout OLD',
+          sails.config.closeAuctionHandlers[record.id],
+          record.id
+        );
+        clearTimeout(sails.config.closeAuctionHandlers[record.id]);
       }
 
+      var expireDuration = moment(record.endAt).diff(
+        new Date(),
+        'milliseconds'
+      );
+
       // create an updated selfClose auction
-      closeAuctionHandlers[record.id] = setTimeout(async () => {
+      console.log(
+        ' ******    set new timer !!! ',
+        sails.config.closeAuctionHandlers[record.id],
+        record.id,
+        'new timer by seconds',
+        expireDuration
+      );
+      sails.config.closeAuctionHandlers[record.id] = setTimeout(async () => {
+        console.log(
+          ' ******    remove timer LAST and CLOSE !!! ',
+          sails.config.closeAuctionHandlers[record.id],
+          record.id
+        );
         console.log('close auction in update process', record.id);
         await Auction.update(
           {
@@ -301,7 +323,7 @@ module.exports = {
           'auction_model_update',
           auctionPopulated
         );
-      }, 60000);
+      }, expireDuration);
     }
 
     return proceed();
@@ -312,8 +334,8 @@ module.exports = {
     sails.sockets.broadcast('auction_model', 'auction_model_destroy', record);
 
     // remove old selfClose auction
-    if (closeAuctionHandlers[record.id]) {
-      clearTimeout(closeAuctionHandlers[record.id]);
+    if (sails.config.closeAuctionHandlers[record.id]) {
+      clearTimeout(sails.config.closeAuctionHandlers[record.id]);
     }
 
     return proceed();

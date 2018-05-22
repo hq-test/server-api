@@ -10,11 +10,11 @@
  */
 
 module.exports.bootstrap = function(done) {
-
   // By convention, this is a good place to set up fake data during development.
+
+  sails.config.closeAuctionHandlers = [];
 
   // Don't forget to trigger `done()` when this bootstrap function's logic is finished.
   // (otherwise your server will never lift, since it's waiting on the bootstrap)
   return done();
-
 };
