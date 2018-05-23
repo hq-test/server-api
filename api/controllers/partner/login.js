@@ -12,27 +12,19 @@ module.exports = async function login(req, res) {
         password: req.allParams().password
       });
 
-      console.log('------------', partner);
       if (partner) {
-        try {
-          await Partner.update(
-            {
-              id: partner.id
-            },
-            {
-              socket: socketId
-            }
-          );
-          res.json({
-            result: true,
-            data: partner
-          });
-        } catch (err) {
-          res.json({
-            result: false,
-            error: err
-          });
-        }
+        await Partner.update(
+          {
+            id: partner.id
+          },
+          {
+            socket: socketId
+          }
+        );
+        res.json({
+          result: true,
+          data: partner
+        });
       } else {
         res.json({
           result: false,
