@@ -2,11 +2,14 @@ const moment = require('moment');
 
 module.exports = async function update(req, res) {
   try {
+    if (!req.isSocket) {
+      return res.json({
+        result: false,
+        error: { message: 'invalid socket request' }
+      });
+    }
     var allParams = req.allParams();
     console.log('receive start auction ', allParams);
-    if (!req.isSocket) {
-      return res.badRequest();
-    }
 
     if (allParams.id) {
       var auction = await Auction.update(
@@ -20,7 +23,7 @@ module.exports = async function update(req, res) {
         }
       ).meta({ fetch: true });
 
-      console.log('result of start is', auction.length && auction[0]);
+      console.log('result of start is', auction.length, auction);
       return res.json({ result: true, data: auction.length && auction[0] });
     } else {
       return res.json({

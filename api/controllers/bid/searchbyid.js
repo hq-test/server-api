@@ -1,7 +1,10 @@
 module.exports = async function searchById(req, res) {
   try {
     if (!req.isSocket) {
-      return res.badRequest();
+      return res.json({
+        result: false,
+        error: { message: 'invalid socket request' }
+      });
     }
 
     var allParams = req.allParams();

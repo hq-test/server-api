@@ -2,11 +2,15 @@ const moment = require('moment');
 
 module.exports = async function create(req, res) {
   try {
+    if (!req.isSocket) {
+      return res.json({
+        result: false,
+        error: { message: 'invalid socket request' }
+      });
+    }
+
     var allParams = req.allParams();
     console.log('receive new auction create', allParams);
-    if (!req.isSocket) {
-      return res.badRequest();
-    }
 
     if (allParams.room && allParams.minimumAllowedBid) {
       let query = {

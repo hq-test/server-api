@@ -5,6 +5,7 @@ module.exports = async function subscribe(req, res) {
       error: { message: 'invalid socket request' }
     });
   }
+
   sails.sockets.join(req, 'auction_model', function(err) {
     if (err) {
       return res.json({ result: false, error: err });

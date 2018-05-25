@@ -44,7 +44,9 @@ module.exports.routes = {
   'delete /api/auction/destroy': 'auction/destroy',
 
   'post /api/bid/create': 'bid/create',
-  'post /api/bid/search/id': 'bid/searchById'
+  'post /api/bid/search/id': 'bid/searchById',
+  'get /api/bid/read/live': 'bid/readLive',
+  'get /api/bid/read/more': 'bid/readMore'
 
   /***************************************************************************
    *                                                                          *

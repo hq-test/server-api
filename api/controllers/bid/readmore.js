@@ -1,4 +1,4 @@
-module.exports = async function destroy(req, res) {
+module.exports = async function readMore(req, res) {
   try {
     if (!req.isSocket) {
       return res.json({
@@ -8,20 +8,21 @@ module.exports = async function destroy(req, res) {
     }
 
     var allParams = req.allParams();
-    console.log('receive delete auction ', allParams);
 
-    if (allParams.id) {
-      var auction = await Auction.destroy({ id: allParams.id }).meta({
-        fetch: true
-      });
-      console.log('result of delete is', auction);
-      return res.json({ result: true, data: auction });
-    } else {
+    if (!allParams.id || !allParams.maxId) {
       return res.json({
         result: false,
         error: { message: 'Invalid required parameters' }
       });
     }
+
+    var bids = await Bid.find({
+      where: { auction: allParams.id, id: { '<': allParams.maxId } },
+      sort: 'id DESC',
+      limit: 3
+    }).populate('partner');
+
+    return res.json({ result: true, data: bids });
   } catch (err) {
     return res.json({ result: false, error: err });
   }

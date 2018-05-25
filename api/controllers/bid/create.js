@@ -1,10 +1,14 @@
 module.exports = async function create(req, res) {
   try {
+    if (!req.isSocket) {
+      return res.json({
+        result: false,
+        error: { message: 'invalid socket request' }
+      });
+    }
+
     var allParams = req.allParams();
     console.log('------------- receive new bid create', allParams);
-    if (!req.isSocket) {
-      return res.badRequest();
-    }
 
     if (allParams.auction && allParams.partner && allParams.bidAmount) {
       var auction = await Auction.findOne({
@@ -48,10 +52,15 @@ module.exports = async function create(req, res) {
             }
           );
 
+          // var populatedBid = await Bid.findOne({ id: bid.id }).populate(
+          //   'partner'
+          // );
           console.log(
             '-------------  check update old bid',
             'bids count',
             auction.bids.length
+            // 'populated bid is',
+            // populatedBid
           );
 
           if (auction.bids.length) {

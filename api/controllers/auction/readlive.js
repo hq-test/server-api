@@ -1,5 +1,12 @@
 module.exports = async function readLive(req, res) {
   try {
+    if (!req.isSocket) {
+      return res.json({
+        result: false,
+        error: { message: 'invalid socket request' }
+      });
+    }
+
     var auctions = await Auction.find({
       where: { isRunning: true, isActive: true },
       sort: 'endAt ASC'

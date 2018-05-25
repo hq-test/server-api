@@ -1,6 +1,9 @@
 module.exports = async function readArchived(req, res) {
   if (!req.isSocket) {
-    return res.badRequest();
+    return res.json({
+      result: false,
+      error: { message: 'invalid socket request' }
+    });
   }
 
   try {

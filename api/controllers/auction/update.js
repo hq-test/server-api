@@ -1,10 +1,14 @@
 module.exports = async function update(req, res) {
   try {
+    if (!req.isSocket) {
+      return res.json({
+        result: false,
+        error: { message: 'invalid socket request' }
+      });
+    }
+
     var allParams = req.allParams();
     console.log('receive update auction ', allParams);
-    if (!req.isSocket) {
-      return res.badRequest();
-    }
 
     if (allParams.id && allParams.room && allParams.minimumAllowedBid) {
       var auction = await Auction.update(

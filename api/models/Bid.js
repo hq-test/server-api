@@ -24,7 +24,8 @@ module.exports = {
 
   afterCreate: async function(record, proceed) {
     console.log('new bid record', record);
-    sails.sockets.broadcast('bid_model', 'bid_model_create', record);
+    let populatedBid = await Bid.findOne({ id: record.id }).populate('partner');
+    sails.sockets.broadcast('bid_model', 'bid_model_create', populatedBid);
 
     // read auction to check the end time
     // if END TIME is less than a minute add 1 Min to end time
@@ -76,7 +77,9 @@ module.exports = {
 
   afterUpdate: async function(record, proceed) {
     console.log('update bid record', record);
-    sails.sockets.broadcast('bid_model', 'bid_model_update', record);
+    let populatedBid = await Bid.findOne({ id: record.id }).populate('partner');
+
+    sails.sockets.broadcast('bid_model', 'bid_model_update', populatedBid);
 
     // notify auction that have their bids chanages
     var auctionPopulated = await Auction.findOne({
