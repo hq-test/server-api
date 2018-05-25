@@ -36,6 +36,8 @@ module.exports.routes = {
   'get /api/auction/read/archived': 'auction/readArchived',
   'post /api/auction/subscribe': 'auction/subscribe',
   'post /api/auction/unsubscribe': 'auction/unsubscribe',
+  'post /api/auction/detail/subscribe': 'auction/subscribeDetail',
+  'post /api/auction/detail/unsubscribe': 'auction/unsubscribeDetail',
   'post /api/auction/create': 'auction/create',
   'put /api/auction/update': 'auction/update',
   'put /api/auction/start': 'auction/start',

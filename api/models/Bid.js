@@ -62,13 +62,12 @@ module.exports = {
         })
           .populate('room')
           .populate('bids', { limit: 1, sort: 'createdAt DESC' });
-        if (auction) {
-          sails.sockets.broadcast(
-            'auction_model',
-            'auction_model_update',
-            auctionPopulated
-          );
-        }
+
+        sails.sockets.broadcast(
+          'auction_model',
+          'auction_model_update',
+          auctionPopulated
+        );
       }
     }
 
@@ -77,6 +76,7 @@ module.exports = {
 
   afterUpdate: async function(record, proceed) {
     console.log('update bid record', record);
+    sails.sockets.broadcast('bid_model', 'bid_model_update', record);
 
     // notify auction that have their bids chanages
     var auctionPopulated = await Auction.findOne({
