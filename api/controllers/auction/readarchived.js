@@ -1,12 +1,23 @@
 module.exports = async function readArchived(req, res) {
-  if (!req.isSocket) {
-    return res.json({
-      result: false,
-      error: { message: 'invalid socket request' }
-    });
-  }
-
   try {
+    /***************************************************************************
+     *                                                                          *
+     * Only socket request are valid                                            *
+     *                                                                          *
+     ***************************************************************************/
+    if (!req.isSocket) {
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid socket request'
+        })
+      );
+    }
+
+    /***************************************************************************
+     *                                                                          *
+     * Find all auction that are Archived                                       *
+     *                                                                          *
+     ***************************************************************************/
     var auctions = await Auction.find({
       where: {
         isRunning: false,
@@ -19,8 +30,18 @@ module.exports = async function readArchived(req, res) {
       .populate('room')
       .populate('bids', { limit: 1, sort: 'createdAt DESC' });
 
-    return res.json({ result: true, data: auctions });
+    /***************************************************************************
+     *                                                                          *
+     * Send success result to client                                            *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.success(auctions));
   } catch (err) {
-    return res.json({ result: false, error: err });
+    /***************************************************************************
+     *                                                                          *
+     * Send exception error result to client                                    *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.error(err));
   }
 };

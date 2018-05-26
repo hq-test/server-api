@@ -1,11 +1,32 @@
+/***************************************************************************
+ *                                                                          *
+ * Bid Model                                                                *
+ *                                                                          *
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                          *
+ * Load moment library                                                      *
+ *                                                                          *
+ ***************************************************************************/
 const moment = require('moment');
 
 module.exports = {
+  /***************************************************************************
+   *                                                                          *
+   * Attributes                                                               *
+   *                                                                          *
+   ***************************************************************************/
   attributes: {
     auction: {
       model: 'auction'
     },
 
+    /***************************************************************************
+     *                                                                          *
+     * One way relation to Partner model                                        *
+     *                                                                          *
+     ***************************************************************************/
     partner: {
       model: 'partner'
     },
@@ -22,48 +43,98 @@ module.exports = {
     }
   },
 
+  /***************************************************************************
+   *                                                                          *
+   * Model Events                                                             *
+   *                                                                          *
+   ***************************************************************************/
+
+  /***************************************************************************
+   *                                                                          *
+   * Trigger after create bid                                                 *
+   *                                                                          *
+   ***************************************************************************/
   afterCreate: async function(record, proceed) {
-    console.log('new bid record', record);
+    /***************************************************************************
+     *                                                                          *
+     * Find created bid with related data                                       *
+     *                                                                          *
+     ***************************************************************************/
     let populatedBid = await Bid.findOne({ id: record.id }).populate('partner');
+
+    /***************************************************************************
+     *                                                                          *
+     * Populated created bid with related data to all listeners                 *
+     *                                                                          *
+     ***************************************************************************/
     sails.sockets.broadcast('bid_model', 'bid_model_create', populatedBid);
 
-    // read auction to check the end time
-    // if END TIME is less than a minute add 1 Min to end time
+    /***************************************************************************
+     *                                                                          *
+     * Read auction to check the end time                                       *
+     * If END TIME is less than a minute add 1 Min to end time                  *
+     *                                                                          *
+     ***************************************************************************/
     var auction = await Auction.findOne({
       id: record.auction
     });
 
+    /***************************************************************************
+     *  Validate auction record                                                 *
+     *                                                                          *
+     ***************************************************************************/
     if (auction) {
+      /***************************************************************************
+       *                                                                          *
+       * calculate when the auction expire                                        *
+       *                                                                          *
+       ***************************************************************************/
       let expireDuration = moment(auction.endAt).diff(new Date(), 'seconds');
+
+      /***************************************************************************
+       *                                                                          *
+       * Check it is necessary to update auction expire time                      *
+       * If expire duration is less than 1 Minute is it necessary to update       *
+       *                                                                          *
+       ***************************************************************************/
       let needUpdateAuctionEndAt = expireDuration < 60 ? true : false;
 
-      console.log(
-        ' ---------  needUpdateAuctionEndAt',
-        needUpdateAuctionEndAt,
-        expireDuration,
-        'seconds'
-      );
-
       if (needUpdateAuctionEndAt) {
-        // update Auction endAt feild and increase it 1 min
+        /***************************************************************************
+         *                                                                          *
+         * Update Auction endAt feild and increase it X minuete                     *
+         *                                                                          *
+         ***************************************************************************/
         await Auction.update(
           {
             id: record.auction
           },
           {
             endAt: moment(auction.endAt)
-              .add('1', 'm')
+              .add(
+                sails.config.custom.defaultIncrementBidExpirationByMinutes,
+                'm'
+              )
               .valueOf()
           }
         ).meta({ fetch: true });
       } else {
-        // send all listeners of auction new bid received
+        /***************************************************************************
+         *                                                                          *
+         * Send all listeners of auction new bid received                           *
+         *                                                                          *
+         ***************************************************************************/
         var auctionPopulated = await Auction.findOne({
           id: record.auction
         })
           .populate('room')
           .populate('bids', { limit: 1, sort: 'createdAt DESC' });
 
+        /***************************************************************************
+         *                                                                          *
+         * Populate updated auction to all listeners                                *
+         *                                                                          *
+         ***************************************************************************/
         sails.sockets.broadcast(
           'auction_model',
           'auction_model_update',
@@ -75,19 +146,42 @@ module.exports = {
     return proceed();
   },
 
+  /***************************************************************************
+   *                                                                          *
+   * Trigger after update bid                                                 *
+   *                                                                          *
+   ***************************************************************************/
   afterUpdate: async function(record, proceed) {
-    console.log('update bid record', record);
+    /***************************************************************************
+     *                                                                          *
+     * Find created bid with related data                                       *
+     *                                                                          *
+     ***************************************************************************/
     let populatedBid = await Bid.findOne({ id: record.id }).populate('partner');
 
+    /***************************************************************************
+     *                                                                          *
+     * Populated updated bid with related data to all listeners                 *
+     *                                                                          *
+     ***************************************************************************/
     sails.sockets.broadcast('bid_model', 'bid_model_update', populatedBid);
 
-    // notify auction that have their bids chanages
+    /***************************************************************************
+     *                                                                          *
+     * Notify auction that have their bids chanages                             *
+     *                                                                          *
+     ***************************************************************************/
     var auctionPopulated = await Auction.findOne({
       id: record.auction
     })
       .populate('room')
       .populate('bids', { limit: 1, sort: 'createdAt DESC' });
 
+    /***************************************************************************
+     *                                                                          *
+     * Populate updated auction to all listeners                                *
+     *                                                                          *
+     ***************************************************************************/
     if (auctionPopulated) {
       sails.sockets.broadcast(
         'auction_model',
@@ -96,23 +190,21 @@ module.exports = {
       );
     }
 
-    // notify loser partner for this auction bid
-    // find loser socket for notify
+    /***************************************************************************
+     *                                                                          *
+     * Notify loser partner for this auction bid                                *
+     * Find loser socket for notify                                             *
+     *                                                                          *
+     ***************************************************************************/
     var partner = await Partner.findOne({
       id: record.partner
     });
-    console.log('find loser socket for notify', partner);
 
-    // notify winner
-    console.log(
-      'notify loser',
-      'room ',
-      partner.socket,
-      'event',
-      'bid_model_loser',
-      auctionPopulated
-    );
-
+    /***************************************************************************
+     *                                                                          *
+     * Populate loser bid to all listeners                                      *
+     *                                                                          *
+     ***************************************************************************/
     sails.sockets.broadcast(partner.socket, 'bid_model_loser', record);
 
     return proceed();

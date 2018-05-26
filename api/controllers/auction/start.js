@@ -2,37 +2,76 @@ const moment = require('moment');
 
 module.exports = async function update(req, res) {
   try {
+    /***************************************************************************
+     *                                                                          *
+     * Only socket request are valid                                            *
+     *                                                                          *
+     ***************************************************************************/
     if (!req.isSocket) {
-      return res.json({
-        result: false,
-        error: { message: 'invalid socket request' }
-      });
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid socket request'
+        })
+      );
     }
-    var allParams = req.allParams();
-    console.log('receive start auction ', allParams);
 
+    /***************************************************************************
+     *                                                                          *
+     * Extract input params and store in a local variable for use               *
+     *                                                                          *
+     ***************************************************************************/
+    var allParams = req.allParams();
+
+    /***************************************************************************
+     *                                                                          *
+     * Validate required fields                                                 *
+     *                                                                          *
+     ***************************************************************************/
     if (allParams.id) {
+      /***************************************************************************
+       *                                                                          *
+       * Update auction record By ID                                              *
+       * If auction is not Executed yet, Execute it with Duration 1 Minute        *
+       *                                                                          *
+       ***************************************************************************/
       var auction = await Auction.update(
         { id: allParams.id, isRunning: false },
         {
           startAt: new Date().getTime(),
           endAt: moment()
-            .add('1', 'm')
+            .add(sails.config.custom.defaultBidDurationByMinutes, 'm')
             .valueOf(),
           isRunning: true
         }
       ).meta({ fetch: true });
 
-      console.log('result of start is', auction.length, auction);
-      return res.json({ result: true, data: auction.length && auction[0] });
+      /***************************************************************************
+       *                                                                          *
+       * Send success result to client                                            *
+       *                                                                          *
+       ***************************************************************************/
+      return res.json(
+        await sails.helpers.response.success(auction.length && auction[0])
+      );
     } else {
-      return res.json({
-        result: false,
-        error: { message: 'Invalid required parameters' }
-      });
+      /***************************************************************************
+       *                                                                          *
+       * Invalid required fields                                                  *
+       * Send error result to client                                              *
+       *                                                                          *
+       ***************************************************************************/
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid required parameters'
+        })
+      );
     }
   } catch (err) {
-    console.log('catch', err);
-    return res.json({ result: false, error: err });
+    /***************************************************************************
+     *                                                                          *
+     * Send exception error result to client                                    *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.error(err));
   }
 };

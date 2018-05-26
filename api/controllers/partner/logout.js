@@ -1,17 +1,46 @@
 module.exports = async function logout(req, res) {
-  if (!req.isSocket) {
-    return res.badRequest();
-  }
-
-  var socketId = sails.sockets.getId(req);
-
   try {
+    /***************************************************************************
+     *                                                                          *
+     * Only socket request are valid                                            *
+     *                                                                          *
+     ***************************************************************************/
+    if (!req.isSocket) {
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid socket request'
+        })
+      );
+    }
+
+    /***************************************************************************
+     *                                                                          *
+     * Find scoket ID from request                                              *
+     *                                                                          *
+     ***************************************************************************/
+    var socketId = sails.sockets.getId(req);
+
+    /***************************************************************************
+     *                                                                          *
+     * Find partner record by connected socket ID                               *
+     *                                                                          *
+     ***************************************************************************/
     var partner = await Partner.findOne({
       socket: socketId
     });
 
+    /***************************************************************************
+     *                                                                          *
+     * Validate partner record                                                  *
+     *                                                                          *
+     ***************************************************************************/
     if (partner) {
       try {
+        /***************************************************************************
+         *                                                                          *
+         * Update partner & remove the fields related to logged in partner          *
+         *                                                                          *
+         ***************************************************************************/
         await Partner.update(
           {
             socket: socketId
@@ -21,25 +50,40 @@ module.exports = async function logout(req, res) {
             token: ''
           }
         );
-        res.json({
-          result: true
-        });
+
+        /***************************************************************************
+         *                                                                          *
+         * Send success result to client                                            *
+         *                                                                          *
+         ***************************************************************************/
+        return res.json(await sails.helpers.response.success());
       } catch (err) {
-        res.json({
-          result: false,
-          error: err
-        });
+        /***************************************************************************
+         *                                                                          *
+         * Send exception error result to client                                    *
+         *                                                                          *
+         ***************************************************************************/
+        return res.json(await sails.helpers.response.error(err));
       }
     } else {
-      res.json({
-        result: false,
-        error: 'Invalid credentials, Partner not found'
-      });
+      /***************************************************************************
+       *                                                                          *
+       * Partner record not found according the input credentials                 *
+       * Send error result to client                                              *
+       *                                                                          *
+       ***************************************************************************/
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid credentials, Partner not found'
+        })
+      );
     }
   } catch (err) {
-    res.json({
-      result: false,
-      error: err
-    });
+    /***************************************************************************
+     *                                                                          *
+     * Send exception error result to client                                    *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.error(err));
   }
 };

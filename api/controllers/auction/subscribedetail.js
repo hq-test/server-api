@@ -1,15 +1,37 @@
 module.exports = async function subscribeDetail(req, res) {
-  if (!req.isSocket) {
-    return res.json({
-      result: false,
-      error: { message: 'invalid socket request' }
-    });
-  }
-  sails.sockets.join(req, 'bid_model', function(err) {
-    if (err) {
-      return res.json({ result: false, error: err });
+  try {
+    /***************************************************************************
+     *                                                                          *
+     * Only socket request are valid                                            *
+     *                                                                          *
+     ***************************************************************************/
+    if (!req.isSocket) {
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid socket request'
+        })
+      );
     }
 
-    return res.json({ result: true });
-  });
+    /***************************************************************************
+     *                                                                          *
+     * Subscribe to listening bid room                                          *
+     *                                                                          *
+     ***************************************************************************/
+    sails.sockets.join(req, 'bid_model');
+
+    /***************************************************************************
+     *                                                                          *
+     * Send success result to client                                            *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.success());
+  } catch (err) {
+    /***************************************************************************
+     *                                                                          *
+     * Send exception error result to client                                    *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.error(err));
+  }
 };

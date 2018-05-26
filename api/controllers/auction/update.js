@@ -1,16 +1,41 @@
+/***************************************************************************
+ *                                                                          *
+ * Update Auction record                                                    *
+ *                                                                          *
+ ***************************************************************************/
 module.exports = async function update(req, res) {
   try {
+    /***************************************************************************
+     *                                                                          *
+     * Only socket request are valid                                            *
+     *                                                                          *
+     ***************************************************************************/
     if (!req.isSocket) {
-      return res.json({
-        result: false,
-        error: { message: 'invalid socket request' }
-      });
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid socket request'
+        })
+      );
     }
 
+    /***************************************************************************
+     *                                                                          *
+     * Extract input params and store in a local variable for use               *
+     *                                                                          *
+     ***************************************************************************/
     var allParams = req.allParams();
-    console.log('receive update auction ', allParams);
 
+    /***************************************************************************
+     *                                                                          *
+     * Validate required fields                                                 *
+     *                                                                          *
+     ***************************************************************************/
     if (allParams.id && allParams.room && allParams.minimumAllowedBid) {
+      /***************************************************************************
+       *                                                                          *
+       * Update Auction record by ID                                              *
+       *                                                                          *
+       ***************************************************************************/
       var auction = await Auction.update(
         { id: allParams.id },
         {
@@ -21,14 +46,31 @@ module.exports = async function update(req, res) {
         }
       ).meta({ fetch: true });
 
-      return res.json({ result: true, data: auction });
+      /***************************************************************************
+       *                                                                          *
+       * Send success result to client                                            *
+       *                                                                          *
+       ***************************************************************************/
+      return res.json(await sails.helpers.response.success(auction));
     } else {
-      return res.json({
-        result: false,
-        error: { message: 'Invalid required parameters' }
-      });
+      /***************************************************************************
+       *                                                                          *
+       * Invalid required fields                                                  *
+       * Send error result to client                                              *
+       *                                                                          *
+       ***************************************************************************/
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid required parameters'
+        })
+      );
     }
   } catch (err) {
-    return res.json({ result: false, error: err });
+    /***************************************************************************
+     *                                                                          *
+     * Send exception error result to client                                    *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.error(err));
   }
 };

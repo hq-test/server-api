@@ -1,18 +1,59 @@
 module.exports = async function login(req, res) {
-  if (!req.isSocket) {
-    return res.badRequest();
-  }
+  try {
+    /***************************************************************************
+     *                                                                          *
+     * Only socket request are valid                                            *
+     *                                                                          *
+     ***************************************************************************/
+    if (!req.isSocket) {
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'Invalid socket request'
+        })
+      );
+    }
 
-  if (req.allParams().username && req.allParams().password) {
-    var socketId = sails.sockets.getId(req);
+    /***************************************************************************
+     *                                                                          *
+     * Extract input params and store in a local variable for use               *
+     *                                                                          *
+     ***************************************************************************/
+    var allParams = req.allParams();
 
-    try {
+    /***************************************************************************
+     *                                                                          *
+     * Validate required fields                                                 *
+     *                                                                          *
+     ***************************************************************************/
+    if (allParams.username && allParams.password) {
+      /***************************************************************************
+       *                                                                          *
+       * Find scoket ID from request                                              *
+       *                                                                          *
+       ***************************************************************************/
+      var socketId = sails.sockets.getId(req);
+
+      /***************************************************************************
+       *                                                                          *
+       * Find partner with credentials                                            *
+       *                                                                          *
+       ***************************************************************************/
       var partner = await Partner.findOne({
-        username: req.allParams().username,
-        password: req.allParams().password
+        username: allParams.username,
+        password: allParams.password
       });
 
+      /***************************************************************************
+       *                                                                          *
+       * Validate partner record                                                  *
+       *                                                                          *
+       ***************************************************************************/
       if (partner) {
+        /***************************************************************************
+         *                                                                          *
+         * Update partner record with connected socket ID for communication         *
+         *                                                                          *
+         ***************************************************************************/
         await Partner.update(
           {
             id: partner.id
@@ -21,26 +62,45 @@ module.exports = async function login(req, res) {
             socket: socketId
           }
         );
-        res.json({
-          result: true,
-          data: partner
-        });
+
+        /***************************************************************************
+         *                                                                          *
+         * Send success result to client                                            *
+         *                                                                          *
+         ***************************************************************************/
+        return res.json(await sails.helpers.response.success(partner));
       } else {
-        res.json({
-          result: false,
-          error: 'Invalid credentials, Partner not found'
-        });
+        /***************************************************************************
+         *                                                                          *
+         * Partner record not found according the input credentials                 *
+         * Send error result to client                                              *
+         *                                                                          *
+         ***************************************************************************/
+        return res.json(
+          await sails.helpers.response.error({
+            message: 'Invalid credentials, Partner not found'
+          })
+        );
       }
-    } catch (err) {
-      res.json({
-        result: false,
-        error: err
-      });
+    } else {
+      /***************************************************************************
+       *                                                                          *
+       * Invalid required fields                                                  *
+       * Send error result to client                                              *
+       *                                                                          *
+       ***************************************************************************/
+      return res.json(
+        await sails.helpers.response.error({
+          message: 'username & password are required'
+        })
+      );
     }
-  } else {
-    res.json({
-      result: false,
-      error: 'username & password are required'
-    });
+  } catch (err) {
+    /***************************************************************************
+     *                                                                          *
+     * Send exception error result to client                                    *
+     *                                                                          *
+     ***************************************************************************/
+    return res.json(await sails.helpers.response.error(err));
   }
 };

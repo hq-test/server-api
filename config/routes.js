@@ -26,28 +26,6 @@ module.exports.routes = {
     view: 'pages/homepage'
   },
 
-  'get /api/partner/:userId': 'partner/read',
-  'get /api/partner/send': 'partner/send',
-  'post /api/partner/login': 'partner/login',
-  'post /api/partner/logout': 'partner/logout',
-
-  'get /api/auction/read/all': 'auction/read',
-  'get /api/auction/read/live': 'auction/readLive',
-  'get /api/auction/read/archived': 'auction/readArchived',
-  'post /api/auction/subscribe': 'auction/subscribe',
-  'post /api/auction/unsubscribe': 'auction/unsubscribe',
-  'post /api/auction/detail/subscribe': 'auction/subscribeDetail',
-  'post /api/auction/detail/unsubscribe': 'auction/unsubscribeDetail',
-  'post /api/auction/create': 'auction/create',
-  'put /api/auction/update': 'auction/update',
-  'put /api/auction/start': 'auction/start',
-  'delete /api/auction/destroy': 'auction/destroy',
-
-  'post /api/bid/create': 'bid/create',
-  'post /api/bid/search/id': 'bid/searchById',
-  'get /api/bid/read/live': 'bid/readLive',
-  'get /api/bid/read/more': 'bid/readMore'
-
   /***************************************************************************
    *                                                                          *
    * More custom routes here...                                               *
@@ -62,6 +40,36 @@ module.exports.routes = {
   //  ╔═╗╔═╗╦  ╔═╗╔╗╔╔╦╗╔═╗╔═╗╦╔╗╔╔╦╗╔═╗
   //  ╠═╣╠═╝║  ║╣ ║║║ ║║╠═╝║ ║║║║║ ║ ╚═╗
   //  ╩ ╩╩  ╩  ╚═╝╝╚╝═╩╝╩  ╚═╝╩╝╚╝ ╩ ╚═╝
+
+  /***************************************************************************
+   * Partner Routes                                                          *
+   ***************************************************************************/
+  'get /api/partner/:userId': 'partner/read',
+  'post /api/partner/login': 'partner/login',
+  'post /api/partner/logout': 'partner/logout',
+
+  /***************************************************************************
+   * Auction Routes                                                          *
+   ***************************************************************************/
+  'get /api/auction/read/all': 'auction/read',
+  'get /api/auction/read/live': 'auction/readLive',
+  'get /api/auction/read/archived': 'auction/readArchived',
+  'post /api/auction/subscribe': 'auction/subscribe',
+  'post /api/auction/unsubscribe': 'auction/unsubscribe',
+  'post /api/auction/detail/subscribe': 'auction/subscribeDetail',
+  'post /api/auction/detail/unsubscribe': 'auction/unsubscribeDetail',
+  'post /api/auction/create': 'auction/create',
+  'put /api/auction/update': 'auction/update',
+  'put /api/auction/start': 'auction/start',
+  'delete /api/auction/destroy': 'auction/destroy',
+
+  /***************************************************************************
+   * Bid Routes                                                              *
+   ***************************************************************************/
+  'post /api/bid/create': 'bid/create',
+  'post /api/bid/search/id': 'bid/searchById',
+  'get /api/bid/read/live': 'bid/readLive',
+  'get /api/bid/read/more': 'bid/readMore'
 
   //  ╦ ╦╔═╗╔╗ ╦ ╦╔═╗╔═╗╦╔═╔═╗
   //  ║║║║╣ ╠╩╗╠═╣║ ║║ ║╠╩╗╚═╗
