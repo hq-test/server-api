@@ -1,27 +1,87 @@
-# server-api
+# HQ Assignment - Server API
 
-a [Sails v1](https://sailsjs.com) application
+### Installation
 
+Server API needs [Node.js](https://nodejs.org/) v8+ to run.
+It is based on [Sails.js Framework](http://sailsjs.com).
+
+Install the dependencies and devDependencies and start the server.
+
+```sh
+$ mpm install sails -g
+$ npm install -d
+```
+
+### Configuration & Prestart
+
+Find mysql configuration in this path :
+
+```sh
+./config/datastore.js
+```
+
+Update with your credentials :
+
+```sh
+    adapter: 'sails-mysql',
+    url: 'mysql://root:@localhost:3306/hq'
+```
+
+Find Auction configuration in thi path :
+
+```sh
+./config/custom.js
+```
+
+Update to what work for you :
+
+```sh
+  /***************************************************************************
+   *                                                                          *
+   * Custom global variables to control auction behavior                      *
+   *                                                                          *
+   ***************************************************************************/
+  defaultIncrementBidExpirationByMinutes: 1,
+  defaultBidDurationByMinutes: 1,
+  defaultBidDurationByMiliseconds: 1 * 60 * 1000
+```
+
+**Default :** configured to a new Auction duration be 1 Minute and when a new bid come under 1 Min expiration it extend the expiration time 1 Minute more.
+
+### Plugins & Tools
+
+Server API is currently extended with the following plugins.
+
+| Plugin                                 | About                                                                                  |
+| -------------------------------------- | -------------------------------------------------------------------------------------- |
+| Sails js framework                     | [website](http://sailsjs.com)                                                          |
+| mysql driver for sails js              | [Github](https://github.com/balderdashy/sails-mysql)                                   |
+| Socket IO implementation with sails js | [Documentation](https://sailsjs.com/documentation/reference/web-sockets/socket-client) |
+| Moment                                 | [website](https://momentjs.com/)                                                       |
+| Lodash                                 | [website](https://lodash.com/)                                                         |
+
+### Run
+
+You can you sails command to run a sails app :
+
+```sh
+$ sails lift
+```
+
+Or use node to run it :
+
+```sh
+$ node app.js
+```
 
 ### Links
 
-+ [Get started](https://sailsjs.com/get-started)
-+ [Sails framework documentation](https://sailsjs.com/documentation)
-+ [Version notes / upgrading](https://sailsjs.com/documentation/upgrading)
-+ [Deployment tips](https://sailsjs.com/documentation/concepts/deployment)
-+ [Community support options](https://sailsjs.com/support)
-+ [Professional / enterprise options](https://sailsjs.com/enterprise)
-
+* [Sails framework documentation](https://sailsjs.com/documentation)
+* [Version notes / upgrading](https://sailsjs.com/documentation/upgrading)
+* [Deployment tips](https://sailsjs.com/documentation/concepts/deployment)
+* [Community support options](https://sailsjs.com/support)
+* [Professional / enterprise options](https://sailsjs.com/enterprise)
 
 ### Version info
 
 This app was originally generated on Thu May 17 2018 00:39:14 GMT+0430 (+0430) using Sails v1.0.2.
-
-<!-- Internally, Sails used [`sails-generate@1.15.25`](https://github.com/balderdashy/sails-generate/tree/v1.15.25/lib/core-generators/new). -->
-
-
-
-<!--
-Note:  Generators are usually run using the globally-installed `sails` CLI (command-line interface).  This CLI version is _environment-specific_ rather than app-specific, thus over time, as a project's dependencies are upgraded or the project is worked on by different developers on different computers using different versions of Node.js, the Sails dependency in its package.json file may differ from the globally-installed Sails CLI release it was originally generated with.  (Be sure to always check out the relevant [upgrading guides](https://sailsjs.com/upgrading) before upgrading the version of Sails used by your app.  If you're stuck, [get help here](https://sailsjs.com/support).)
--->
-
