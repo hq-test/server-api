@@ -1,5 +1,12 @@
 # HQ Assignment - Server API
 
+This is a part of this assignment [Github](https://github.com/HQInterview/backend-developer-assignment-v2)
+
+Access other parts of this assignment :
+[Server API](https://github.com/hq-test/server-api)
+[Admin Panel](https://github.com/hq-test/server-admin)
+[Partner Panel](https://github.com/hq-test/server-partners)
+
 ### Installation
 
 Server API needs [Node.js](https://nodejs.org/) v8+ to run.
