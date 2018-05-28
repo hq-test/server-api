@@ -4,7 +4,6 @@ var partner;
 //var auction;
 var winnerBid;
 var loserBid;
-var bid;
 
 describe('Partner (model) Integration Tests', function() {
   describe('#Login', function() {
@@ -141,7 +140,7 @@ describe('Partner (model) Integration Tests', function() {
           expect(response.result).to.be.eql(true);
           expect(response.data).to.be.a('object');
           expect(response.data.status).to.be.eql('Pending');
-          bid = response.data;
+          loserBid = response.data;
           return done();
         }
       );
@@ -151,10 +150,9 @@ describe('Partner (model) Integration Tests', function() {
       sails.config.clientIo.socket.post(
         '/api/bid/search/id',
         {
-          id: bid.id
+          id: loserBid.id
         },
         response => {
-          console.log(winnerBid, loserBid, 'not important');
           expect(response).to.be.a('object');
           expect(response.result).to.be.eql(true);
           expect(response.data.bid).to.be.a('object');
@@ -167,12 +165,50 @@ describe('Partner (model) Integration Tests', function() {
       );
     });
 
+    it('post a new bid to auction successfully to reject the old one', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 3000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          winnerBid = response.data;
+          return done();
+        }
+      );
+    });
+
+    it('Old bid notified as loser', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/search/id',
+        {
+          id: loserBid.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data.bid).to.be.a('object');
+          expect(response.data.auction).to.be.a('object');
+          expect(response.data.bid.status).to.be.eql('Rejected');
+          expect(response.data.auction.id).to.be.eql(auction.id);
+
+          return done();
+        }
+      );
+    });
+
     it('winner bid set by server then auction duration finished', done => {
       console.log(
         'please wait ..., it take around 2 minutes to finish the auction and set the winner'
       );
       setTimeout(() => {
-        console.log('Checking for winner...');
+        console.log('Auction closed, Checking for winner...');
         return done();
       }, 120000);
     });
@@ -181,7 +217,7 @@ describe('Partner (model) Integration Tests', function() {
       sails.config.clientIo.socket.post(
         '/api/bid/search/id',
         {
-          id: bid.id
+          id: winnerBid.id
         },
         response => {
           expect(response).to.be.a('object');
