@@ -1,9 +1,11 @@
 var expect = require('chai').expect;
 var partner;
 //var room;
-//var auction;
+var auction;
 var winnerBid;
 var loserBid;
+var allBids = [];
+var maxId;
 
 describe('Partner (model) Integration Tests', function() {
   describe('#Login', function() {
@@ -41,7 +43,7 @@ describe('Partner (model) Integration Tests', function() {
     });
   });
 
-  describe('#get list of live auction', function() {
+  describe('#Todos', function() {
     it('Create a new room', async () => {
       room = await Room.create({
         title: 'test-room1',
@@ -141,6 +143,7 @@ describe('Partner (model) Integration Tests', function() {
           expect(response.data).to.be.a('object');
           expect(response.data.status).to.be.eql('Pending');
           loserBid = response.data;
+          allBids.push(loserBid);
           return done();
         }
       );
@@ -179,6 +182,8 @@ describe('Partner (model) Integration Tests', function() {
           expect(response.data).to.be.a('object');
           expect(response.data.status).to.be.eql('Pending');
           winnerBid = response.data;
+          allBids.push(winnerBid);
+
           return done();
         }
       );
@@ -197,6 +202,193 @@ describe('Partner (model) Integration Tests', function() {
           expect(response.data.auction).to.be.a('object');
           expect(response.data.bid.status).to.be.eql('Rejected');
           expect(response.data.auction.id).to.be.eql(auction.id);
+
+          return done();
+        }
+      );
+    });
+
+    it('create the 3th bid', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 4000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          winnerBid = response.data;
+          allBids.push(winnerBid);
+
+          return done();
+        }
+      );
+    });
+
+    it('create the 4th bid', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 5000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          winnerBid = response.data;
+          allBids.push(winnerBid);
+
+          return done();
+        }
+      );
+    });
+
+    it('create the 5th bid', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 6000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          winnerBid = response.data;
+          allBids.push(winnerBid);
+
+          return done();
+        }
+      );
+    });
+
+    it('create the 6th bid', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 7000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          winnerBid = response.data;
+          allBids.push(winnerBid);
+
+          return done();
+        }
+      );
+    });
+
+    it('create the 7th bid', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 8000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          winnerBid = response.data;
+          allBids.push(winnerBid);
+          return done();
+        }
+      );
+    });
+
+    it('read first page of live bids and validate', done => {
+      sails.config.clientIo.socket.get(
+        '/api/bid/read/live',
+        {
+          id: auction.id // auction ID
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.bids).to.be.a('array');
+          expect(response.data.bids).to.have.length(3);
+          expect(response.data.totalBids).to.be.eql(7);
+          expect(response.data.bids[0].id).to.be.eql(allBids[6].id);
+          expect(response.data.bids[1].id).to.be.eql(allBids[5].id);
+          expect(response.data.bids[2].id).to.be.eql(allBids[4].id);
+          maxId = response.data.bids[2].id;
+          return done();
+        }
+      );
+    });
+
+    it('read second page of live bids and validate', done => {
+      sails.config.clientIo.socket.get(
+        '/api/bid/read/more',
+        {
+          id: auction.id, // auction ID,
+          maxId
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('array');
+          expect(response.data).to.have.length(3);
+          expect(response.data[0].id).to.be.eql(allBids[3].id);
+          expect(response.data[1].id).to.be.eql(allBids[2].id);
+          expect(response.data[2].id).to.be.eql(allBids[1].id);
+          maxId = response.data[2].id;
+
+          return done();
+        }
+      );
+    });
+
+    it('read 3rd page of live bids and validate', done => {
+      sails.config.clientIo.socket.get(
+        '/api/bid/read/more',
+        {
+          id: auction.id, // auction ID,
+          maxId
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('array');
+          expect(response.data).to.have.length(1);
+          expect(response.data[0].id).to.be.eql(allBids[0].id);
+
+          maxId = response.data[0].id;
+
+          return done();
+        }
+      );
+    });
+
+    it('there is no more pages and validate', done => {
+      sails.config.clientIo.socket.get(
+        '/api/bid/read/more',
+        {
+          id: auction.id, // auction ID,
+          maxId
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('array');
+          expect(response.data).to.have.length(0);
 
           return done();
         }
