@@ -102,6 +102,19 @@ describe('Auction (model) Unit Tests', function() {
       expect(auction).to.have.length(1);
       expect(auction[0]).to.be.a('object');
 
+      auction = await Auction.destroy({
+        title: 'test-auction2',
+        room: 2,
+        minimumAllowedBid: 1000,
+        isRunning: true,
+        startAt: startTime,
+        endAt: endTime,
+        isActive: true
+      }).meta({ fetch: true });
+      expect(auction).to.be.a('array');
+      expect(auction).to.have.length(1);
+      expect(auction[0]).to.be.a('object');
+
       var rooms = await Room.destroy({}).meta({ fetch: true });
       expect(rooms).to.be.a('array');
       expect(rooms).to.have.length(2);

@@ -11,7 +11,6 @@ describe('Response Helpers Unit Tests', function() {
 
     it('Create a success response with data', async () => {
       var result = await sails.helpers.response.success({ test: true });
-      console.log(result);
       expect(result).to.be.a('object');
       expect(result.result).to.be.eql(true);
       expect(result.data).to.be.a('object');
