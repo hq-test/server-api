@@ -74,6 +74,22 @@ Or use node to run it :
 $ node app.js
 ```
 
+### Tests
+
+```sh
+$ npm test
+```
+
+### Test Plugins & Tools
+
+Server API is currently extended with the following plugins.
+
+| Plugin                                        | About                                                        |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| Mocha                                         | [website](https://mochajs.org/)                              |
+| Chai                                          | [website](http://www.chaijs.com/)                            |
+| Socket IO client implementation with sails js | [Github](https://github.com/balderdashy/sails.io.js?files=1) |
+
 ### Links
 
 * [Sails framework documentation](https://sailsjs.com/documentation)
