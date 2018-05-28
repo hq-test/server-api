@@ -105,6 +105,44 @@ describe('Partner (model) Integration Tests', function() {
         }
       );
     });
+
+    it('post a bid to auction under allowed price', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 100,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(false);
+          expect(response.error).to.be.a('object');
+          expect(response.error.message).to.be.eql(
+            'Your bid amount is not valid, it must be greater than 1000 BHT.'
+          );
+          return done();
+        }
+      );
+    });
+
+    it('post a bid to auction successfully', done => {
+      sails.config.clientIo.socket.post(
+        '/api/bid/create',
+        {
+          bidAmount: 2000,
+          auction: auction.id,
+          partner: partner.id
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          expect(response.data.status).to.be.eql('Pending');
+          return done();
+        }
+      );
+    });
   });
 
   describe('#Logout', function() {
