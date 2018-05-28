@@ -356,7 +356,7 @@ module.exports = {
                * Find loser partner Socket ID to notify                                   *
                *                                                                          *
                ***************************************************************************/
-              var partner = await Partner.findOne({
+              partner = await Partner.findOne({
                 id: allBids[0].partner
               });
 
@@ -408,7 +408,7 @@ module.exports = {
                * Find winner partner Socket ID to notify                                  *
                *                                                                          *
                ***************************************************************************/
-              var partner = await Partner.findOne({
+              partner = await Partner.findOne({
                 id: allBids[0].partner
               });
 
@@ -448,7 +448,7 @@ module.exports = {
                * Find loser partner Socket ID to notify                                   *
                *                                                                          *
                ***************************************************************************/
-              var partner = await Partner.findOne({
+              partner = await Partner.findOne({
                 id: allBids[0].partner
               });
 
