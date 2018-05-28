@@ -47,8 +47,26 @@ describe('Partner (model) Integration Tests', function() {
         mainImageUri: '',
         isActive: true
       }).meta({ fetch: true });
-      console.log('rrrrrrom', room);
       expect(room).to.be.a('object');
+    });
+
+    it('create an auction for created room without execution', done => {
+      sails.config.clientIo.socket.post(
+        '/api/auction/create',
+        {
+          title: 'test-auction2',
+          room: room.id,
+          minimumAllowedBid: 1000,
+          isActive: true
+        },
+        response => {
+          expect(response).to.be.a('object');
+          expect(response.result).to.be.eql(true);
+          expect(response.data).to.be.a('object');
+          auction = response.data;
+          return done();
+        }
+      );
     });
 
     it('create an auction for created room and execute it', done => {
@@ -79,9 +97,9 @@ describe('Partner (model) Integration Tests', function() {
           expect(response).to.be.a('object');
           expect(response.result).to.be.eql(true);
           expect(response.data).to.be.a('array');
+          expect(response.data).to.have.length(1);
           expect(response.data[0]).to.be.a('object');
-          expect(response.data[0].id).to.be.a('number');
-          console.log(auction);
+          expect(response.data[0].id).to.be.eql(auction.id);
           liveAuctionList = response.data;
           return done();
         }
