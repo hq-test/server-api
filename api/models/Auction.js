@@ -103,6 +103,17 @@ module.exports = {
 
     /***************************************************************************
      *                                                                          *
+     * Populated auction details to all auction listeners                       *
+     *                                                                          *
+     ***************************************************************************/
+    sails.sockets.broadcast(
+      'auction_model',
+      'auction_model_create',
+      auctionPopulated
+    );
+
+    /***************************************************************************
+     *                                                                          *
      * Check auction is Live and Active                                         *
      *                                                                          *
      ***************************************************************************/
@@ -162,16 +173,6 @@ module.exports = {
       );
     }
 
-    /***************************************************************************
-     *                                                                          *
-     * Populated auction details to all auction listeners                       *
-     *                                                                          *
-     ***************************************************************************/
-    sails.sockets.broadcast(
-      'auction_model',
-      'auction_model_create',
-      auctionPopulated
-    );
     return proceed();
   },
 
