@@ -10,11 +10,11 @@ Access other parts of this assignment :
 
 ### Demo Testing part
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NdUt7lxPsgY?ecver=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+[![Demo Testing part](https://raw.githubusercontent.com/hq-test/server-api/master/test.png)](https://www.youtube.com/watch?v=NdUt7lxPsgY&feature=youtu.be)
 
 ### Demo Application UI parts
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/p_31kyj8Ppc?ecver=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+[![Demo Application UI parts](https://raw.githubusercontent.com/hq-test/server-api/master/ui.png)](https://www.youtube.com/watch?v=p_31kyj8Ppc&feature=youtu.be)
 
 ### Installation
 
