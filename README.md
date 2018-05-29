@@ -8,6 +8,14 @@ Access other parts of this assignment :
 * [Admin Panel](https://github.com/hq-test/server-admin)
 * [Partner Panel](https://github.com/hq-test/server-partners)
 
+### Demo Testing part
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NdUt7lxPsgY?ecver=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+### Demo Application UI parts
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/p_31kyj8Ppc?ecver=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
 ### Installation
 
 Server API needs [Node.js](https://nodejs.org/) v8+ to run.
